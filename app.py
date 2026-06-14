@@ -385,9 +385,9 @@ if prompt:
                 api_msgs.append({"role":"user","content":content})
 
                 resp = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
+                    model="llama3-8b-8192",
                     messages=api_msgs,
-                    max_tokens=4096,
+                    max_tokens=2048,
                     temperature=0.7,
                 )
                 reply = resp.choices[0].message.content
