@@ -707,7 +707,7 @@ else:
         else:
             # Text only — content MUST be a STRING (not list)
             api_content = (f"{file_text}\n\n{prompt}").strip() if file_text else prompt
-            model_name = "llama3-8b-8192"
+            model="llama-3.3-70b-versatile"
 
         # Save user message
         st.session_state.chats[cid]["messages"].append({
