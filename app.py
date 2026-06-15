@@ -694,24 +694,19 @@ else:
             title = (prompt[:32] + "...") if len(prompt) > 32 else prompt
             st.session_state.chats[cid]["title"] = title
 
-        # ── CRITICAL FIX: Build API content correctly ──
-        # Text-only model = content must be STRING
-        # Vision model (images) = content must be LIST
+        # ── BUILD API CONTENT CORRECTLY ──
         if images:
-            # Use vision model for images
+            # Vision model — content is a LIST with images + text
             api_content = []
             if file_text:
                 api_content.append({"type": "text", "text": file_text})
             for img in images:
                 api_content.append(img)
             api_content.append({"type": "text", "text": prompt})
-            model_name = "llama-3.2-11b-vision-preview"
+            model_name = "meta-llama/llama-4-scout-17b-16e-instruct"
         else:
-            # Text only — ALWAYS send as string (fixes invalid key error)
-            if file_text:
-                api_content = f"{file_text}\n\nUser question: {prompt}"
-            else:
-                api_content = prompt
+            # Text only — content MUST be a STRING (not list)
+            api_content = (f"{file_text}\n\n{prompt}").strip() if file_text else prompt
             model_name = "llama3-8b-8192"
 
         # Save user message
@@ -737,13 +732,13 @@ else:
                     clean_key = api_key.strip()
                     client = Groq(api_key=clean_key)
 
-                    # Build message history for API
+                    # Build message history — system + past messages as strings only
                     history = [{"role": "system", "content": MODES[cur_mode]}]
                     for m in st.session_state.chats[cid]["messages"][:-1][-10:]:
-                        history.append({
-                            "role": m["role"],
-                            "content": m["content"]  # Always string for history
-                        })
+                        # Always use string content for history (never list)
+                        content_str = m["content"] if isinstance(m["content"], str) else str(m["content"])
+                        history.append({"role": m["role"], "content": content_str})
+                    # Current message (may be list for vision or string for text)
                     history.append({"role": "user", "content": api_content})
 
                     response = client.chat.completions.create(
@@ -768,21 +763,30 @@ else:
                     st.rerun()
 
                 except Exception as e:
-                    err = str(e).lower()
-                    if "401" in str(e) or "invalid_api_key" in err or ("api" in err and "key" in err and "invalid" in err):
-                        st.error("""❌ **API Key Error!**
-
-Please try these steps:
-1. Go to **console.groq.com**
-2. Click **API Keys** → **Create API Key**
-3. Copy the key (starts with `gsk_`)
-4. Click the 👁 eye icon in the sidebar key box, select all, delete, paste fresh key
-5. Make sure there are NO extra spaces""")
-                    elif "429" in str(e) or "rate_limit" in err:
-                        st.error("⏳ **Rate limit reached.** Please wait 60 seconds and try again. This resets automatically!")
-                    elif "400" in str(e):
-                        st.error(f"❌ Bad request error: {str(e)[:200]}")
+                    err_str = str(e)
+                    err_low = err_str.lower()
+                    if "401" in err_str or "invalid_api_key" in err_low:
+                        st.error("❌ **Invalid API Key!**\n\n→ Go to console.groq.com → API Keys → Create new key → Paste it fresh in sidebar (make sure no spaces)")
+                    elif "429" in err_str or "rate_limit" in err_low:
+                        st.error("⏳ **Too many requests!** Wait 60 seconds and try again.")
+                    elif "model" in err_low and "not found" in err_low:
+                        # Fallback: retry with basic model
+                        try:
+                            history[-1]["content"] = prompt  # Use plain text
+                            response2 = client.chat.completions.create(
+                                model="llama3-8b-8192",
+                                messages=history,
+                                max_tokens=2048,
+                                temperature=0.7,
+                            )
+                            reply = response2.choices[0].message.content
+                            st.markdown(reply)
+                            st.session_state.chats[cid]["messages"].append({"role":"assistant","content":reply,"files":[]})
+                            st.session_state.pending_files = []
+                            st.rerun()
+                        except Exception as e2:
+                            st.error(f"❌ Error: {str(e2)[:300]}")
                     else:
-                        st.error(f"❌ Error: {str(e)[:300]}")
+                        st.error(f"❌ Error: {err_str[:300]}")
 
 st.markdown("</div>", unsafe_allow_html=True)
