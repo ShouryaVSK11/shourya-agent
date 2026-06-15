@@ -3,6 +3,30 @@ from groq import Groq
 import base64, fitz, uuid, json
 from datetime import datetime
 import streamlit.components.v1 as components
+# ================= LOGIN =================
+
+USERNAME = "ShouryaVSK"
+PASSWORD = "SAI1919"
+
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if not st.session_state.logged_in:
+    st.title("🔒 Login Required")
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+        if username == USERNAME and password == PASSWORD:
+            st.session_state.logged_in = True
+            st.rerun()
+        else:
+            st.error("Wrong username or password")
+
+    st.stop()
+
+# =========================================
 
 st.set_page_config(
     page_title="Shourya AI",
