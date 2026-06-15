@@ -5,8 +5,8 @@ from datetime import datetime
 import streamlit.components.v1 as components
 # ================= LOGIN =================
 
-USERNAME = "ShouryaVSK"
-PASSWORD = "SAI1919"
+USERNAME = "Shourya"
+PASSWORD = "asdffdsa"
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
