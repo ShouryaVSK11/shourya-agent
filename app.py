@@ -5,8 +5,17 @@ from datetime import datetime
 import streamlit.components.v1 as components
 # ================= LOGIN =================
 
-USERNAME = "Shourya"
-PASSWORD = "asdffdsa"
+# =========================================
+
+st.set_page_config(
+    page_title="Shourya AI",
+    page_icon="🤖",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+USERNAME = "ShouryaVSK"
+PASSWORD = "SAI1919"
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -25,15 +34,6 @@ if not st.session_state.logged_in:
             st.error("Wrong username or password")
 
     st.stop()
-
-# =========================================
-
-st.set_page_config(
-    page_title="Shourya AI",
-    page_icon="🤖",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # ════════════════════════════════════════
 #  COMPLETE PROFESSIONAL CSS - WHITE THEME
