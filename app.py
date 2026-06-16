@@ -426,6 +426,10 @@ def get_chat():
         return st.session_state.chats[st.session_state.current_id]
     return None
 
+# Auto-create first chat
+if not st.session_state.chats:
+    create_new_chat()
+    
 def process_files_for_ai(files):
     """Returns (text_content_string, image_list, file_records)"""
     texts, images, records = [], [], []
@@ -497,7 +501,7 @@ with st.sidebar:
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # Chat History
+   chat_history
     if st.session_state.chats:
         st.markdown("<div style='font-size:0.72rem;color:#9ca3af;margin:10px 0 6px;text-transform:uppercase;letter-spacing:0.05em;'>Chat History</div>", unsafe_allow_html=True)
         sorted_chats = sorted(
@@ -539,6 +543,10 @@ st.markdown("<div class='main-content'>", unsafe_allow_html=True)
 chat = get_chat()
 
 if chat is None:
+    create_new_chat()
+    st.rerun()
+
+
     # Welcome screen
     st.markdown("""
     <div class='welcome-wrap'>
