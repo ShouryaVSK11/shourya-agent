@@ -501,7 +501,6 @@ with st.sidebar:
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-   chat_history
     if st.session_state.chats:
         st.markdown("<div style='font-size:0.72rem;color:#9ca3af;margin:10px 0 6px;text-transform:uppercase;letter-spacing:0.05em;'>Chat History</div>", unsafe_allow_html=True)
         sorted_chats = sorted(
