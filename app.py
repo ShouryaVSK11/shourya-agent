@@ -47,7 +47,10 @@ st.markdown("""
 /* ── App Background ── */
 .stApp { background:#ffffff !important; }
 .main .block-container { padding:0 !important; max-width:100% !important; }
-#MainMenu, footer, header, .stDeployButton { visibility:hidden; display:none; }
+#MainMenu, footer, .stDeployButton {
+    visibility:hidden;
+    display:none;
+}
 
 /* ── Sidebar ── */
 [data-testid="stSidebar"] {
