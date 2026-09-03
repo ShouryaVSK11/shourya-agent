@@ -3,3 +3,4 @@ groq
 Pillow
 PyMuPDF
 duckduckgo-search
+streamlit-js-eval
